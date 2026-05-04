@@ -110,7 +110,7 @@ export default function Footer() {
 
         <p style={{ fontSize: 12, color: "#888" }}>
           Copyright © 2023 CB Concrete. Managed by{" "}
-          <a href="https://subzdesigns.com" style={{ color: "#bbb", fontWeight: 700, textDecoration: "none" }}>Subz Designs</a>
+          <a href="https://empreus.com.au" style={{ color: "#bbb", fontWeight: 700, textDecoration: "none" }}>Empreus IT Support</a>
         </p>
 
         <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
