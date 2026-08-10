@@ -1,6 +1,8 @@
 "use client";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import { useState } from "react";
+import Reveal from "./Reveal";
 
 type FormData = {
   name: string;
@@ -9,6 +11,7 @@ type FormData = {
   service: string;
   intent: string;
   message: string;
+  company: string; // honeypot
 };
 
 const services = [
@@ -18,8 +21,27 @@ const services = [
 ];
 
 export default function Contact() {
-  const { register, handleSubmit, formState: { isSubmitSuccessful, errors } } = useForm<FormData>();
-  const onSubmit = (data: FormData) => console.log(data);
+  const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<FormData>();
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Something went wrong — please try again.");
+      setStatus("success");
+      reset();
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong — please try again.");
+    }
+  };
 
   const selectStyle: React.CSSProperties = {
     border: "none", background: "transparent",
@@ -39,7 +61,7 @@ export default function Contact() {
   return (
     <section id="contact" style={{ position: "relative" }}>
       {/* Full-bleed background photo */}
-      <div style={{ position: "relative", minHeight: 780, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+      <div className="contact-split" style={{ position: "relative" }}>
         <Image
           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80"
           alt="Construction site workers"
@@ -50,11 +72,7 @@ export default function Contact() {
         />
 
         {/* Left side text overlay */}
-        <div style={{
-          position: "absolute", left: "3rem", top: "50%",
-          transform: "translateY(-50%)",
-          zIndex: 2, maxWidth: 420,
-        }}>
+        <Reveal className="contact-info-overlay">
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.25rem" }}>
             <div style={{ width: 36, height: 3, background: "var(--gold)" }} />
             <p style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: "var(--gold)", fontWeight: 700 }}>
@@ -94,17 +112,10 @@ export default function Contact() {
               </a>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {/* White form card */}
-        <div style={{
-          position: "relative", zIndex: 2,
-          background: "#fff",
-          padding: "3.5rem 3rem",
-          width: "100%", maxWidth: 500,
-          margin: "3rem 3rem",
-          flexShrink: 0,
-        }}>
+        <Reveal delay={120} className="contact-form-card">
           {/* Yellow top stripe */}
           <div style={{ height: 4, background: "var(--gold)", position: "absolute", top: 0, left: 0, right: 0 }} />
 
@@ -137,6 +148,16 @@ export default function Contact() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {/* Honeypot — hidden from real users */}
+            <input
+              {...register("company")}
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+              aria-hidden="true"
+            />
+
             <div>
               <label style={{ fontSize: 11, color: "#aaa", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>
                 * Your Name
@@ -148,39 +169,44 @@ export default function Contact() {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+            <div className="form-two-col" style={{ gap: "1.25rem" }}>
               <div>
                 <label style={{ fontSize: 11, color: "#aaa", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>* Your Email</label>
-                <input {...register("email", { required: true })} type="email" placeholder="name@company.com" style={inputStyle} />
+                <input {...register("email", { required: true })} type="email" placeholder="name@company.com" style={{ ...inputStyle, borderBottomColor: errors.email ? "#e53e3e" : "#e0e0e0" }} />
               </div>
               <div>
                 <label style={{ fontSize: 11, color: "#aaa", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>* Phone</label>
-                <input {...register("phone", { required: true })} placeholder="04xx xxx xxx" style={inputStyle} />
+                <input {...register("phone", { required: true })} placeholder="04xx xxx xxx" style={{ ...inputStyle, borderBottomColor: errors.phone ? "#e53e3e" : "#e0e0e0" }} />
               </div>
             </div>
 
             <div>
               <label style={{ fontSize: 11, color: "#aaa", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>* Message</label>
               <textarea
-                {...register("message")}
+                {...register("message", { required: true })}
                 rows={3}
                 placeholder="Tell us about your project..."
-                style={{ ...inputStyle, resize: "none", borderBottom: "1.5px solid #e0e0e0" }}
+                style={{ ...inputStyle, resize: "none", borderBottom: errors.message ? "1.5px solid #e53e3e" : "1.5px solid #e0e0e0" }}
               />
             </div>
 
-            <button type="submit" style={{
-              background: "#111", color: "#fff",
+            <button type="submit" disabled={isSubmitting} className="btn-lift" style={{
+              background: status === "success" ? "#1a8a4a" : "#111", color: "#fff",
               border: "none", padding: "16px 32px",
-              fontWeight: 800, fontSize: 13, cursor: "pointer",
+              fontWeight: 800, fontSize: 13, cursor: isSubmitting ? "wait" : "pointer",
               letterSpacing: 1.5, textTransform: "uppercase",
               width: "100%", marginTop: "0.5rem",
               position: "relative", overflow: "hidden",
+              opacity: isSubmitting ? 0.7 : 1,
+              transition: "background 0.3s, opacity 0.2s",
             }}>
-              {isSubmitSuccessful ? "✓ Message Sent" : "Send Message"}
+              {isSubmitting ? "Sending…" : status === "success" ? "✓ Message Sent" : "Send Message"}
             </button>
+            {status === "error" && (
+              <p style={{ fontSize: 13, color: "#e53e3e", marginTop: "-0.5rem" }}>{errorMsg}</p>
+            )}
           </form>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import Reveal from "./Reveal";
 
 const concretingServices = [
   { num: "01", title: "Site-Pre/Cut", desc: "Precision site preparation and pre-cutting for a flawless project start.", src: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80" },
@@ -19,20 +20,20 @@ const isWide = (_i: number) => false;
 
 export default function Services() {
   return (
-    <section id="concreting" style={{ background: "var(--dark)", padding: "7rem 3rem" }}>
+    <section id="concreting" className="services-pad" style={{ background: "var(--dark)" }}>
 
       {/* Section header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1rem" }}>
+      <Reveal style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1rem" }}>
         <div style={{ width: 36, height: 3, background: "var(--gold)" }} />
         <span style={{ fontSize: 11, color: "var(--gold)", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>
           What we do
         </span>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem", flexWrap: "wrap", gap: "1.5rem" }}>
+      </Reveal>
+      <Reveal delay={80} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem", flexWrap: "wrap", gap: "1.5rem" }}>
         <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 900, color: "#fff", letterSpacing: -1, lineHeight: 1.05 }}>
           Our services cover a wide<br />range of applications
         </h2>
-        <Link href="#contact" style={{
+        <Link href="#contact" className="btn-lift" style={{
           background: "var(--gold)", color: "#111",
           padding: "12px 28px", fontWeight: 800,
           fontSize: 12, letterSpacing: 2,
@@ -40,15 +41,10 @@ export default function Services() {
         }}>
           Get a Quote →
         </Link>
-      </div>
+      </Reveal>
 
       {/* 3x3 uniform grid — 9 cards fill perfectly */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gridTemplateRows: "repeat(3, 280px)",
-        gap: "3px",
-      }}>
+      <div className="services-grid-3col stagger-children">
         {concretingServices.map((s, i) => (
           <div
             key={s.num}

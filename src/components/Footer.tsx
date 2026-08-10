@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 const col1 = ["Concreting", "Exposed Aggregate", "Polished Concrete"];
 const col2 = ["Coloured Concrete", "Stencil Concrete", "Concrete Sealers"];
@@ -66,10 +67,10 @@ export default function Footer() {
 
       {/* Services grid */}
       <div style={{ padding: "4rem 3rem" }}>
-        <p style={{ fontSize: 10, letterSpacing: 4, color: "rgba(245,197,24,0.8)", textTransform: "uppercase", marginBottom: "2rem", fontWeight: 700 }}>
+        <p style={{ fontSize: 10, letterSpacing: 4, color: "rgba(255,245,48,0.8)", textTransform: "uppercase", marginBottom: "2rem", fontWeight: 700 }}>
           OUR SERVICES
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2.5rem" }}>
+        <div className="footer-services-grid">
           {[col1, col2, col3, col4].map((col, i) => (
             <ul key={i} style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
               {col.map((l) => (
@@ -101,12 +102,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", padding: "1.75rem 3rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: "var(--gold)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 12, fontWeight: 900, color: "#111" }}>CB</span>
-          </div>
-          <span style={{ fontSize: 14, fontWeight: 800, color: "#fff", letterSpacing: 3, textTransform: "uppercase" }}>CONCRETE</span>
-        </div>
+        <Image src="/cb-concrete-logo.png" alt="CB Concrete" width={259} height={29} style={{ height: 24, width: "auto" }} />
 
         <p style={{ fontSize: 12, color: "#888" }}>
           Copyright © 2023 CB Concrete. Managed by{" "}

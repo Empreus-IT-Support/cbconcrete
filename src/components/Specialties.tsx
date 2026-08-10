@@ -69,7 +69,7 @@ export default function Specialties() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "var(--gold)";
-              e.currentTarget.style.background = "rgba(245,197,24,0.07)";
+              e.currentTarget.style.background = "rgba(255,245,48,0.07)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = "var(--border)";

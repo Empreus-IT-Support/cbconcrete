@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import Reveal from "@/components/Reveal";
 
 type FormData = {
   role: string;
@@ -14,6 +15,7 @@ type FormData = {
   email: string;
   phone: string;
   message: string;
+  company: string; // honeypot
 };
 
 const roles = ["Architect/Designer", "Builder", "Contractor", "DIYer", "Engineer", "Other"];
@@ -33,22 +35,47 @@ const inputStyle = (hasError: boolean): React.CSSProperties => ({
 });
 
 export default function ContactPage() {
-  const { register, handleSubmit, formState: { isSubmitSuccessful, errors } } = useForm<FormData>();
+  const { register, handleSubmit, reset, setValue, formState: { isSubmitting, errors } } = useForm<FormData>();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const onSubmit = (data: FormData) => console.log(data);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const chooseRole = (r: string) => {
+    setSelectedRole(r);
+    setValue("role", r);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Something went wrong — please try again.");
+      setStatus("success");
+      reset();
+      setSelectedRole(null);
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong — please try again.");
+    }
+  };
 
   return (
     <>
       <Navbar />
 
       {/* ── Full page split layout ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "calc(100vh - 108px)" }}>
+      <div className="contact-page-grid">
 
         {/* LEFT — dark image side */}
-        <div style={{ position: "relative", overflow: "hidden" }}>
+        <div className="contact-page-hero-side">
           <Image
             src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80"
-            alt="Contact background" fill sizes="50vw" priority
+            alt="CB Concrete construction site in Canberra" fill sizes="50vw" priority
             style={{ objectFit: "cover", filter: "grayscale(100%) brightness(0.3)" }}
           />
 
@@ -61,10 +88,10 @@ export default function ContactPage() {
           }} />
 
           {/* Content over image */}
-          <div style={{
+          <div className="contact-page-hero-pad" style={{
             position: "absolute", inset: 0, zIndex: 1,
             display: "flex", flexDirection: "column",
-            justifyContent: "space-between", padding: "4rem 4rem 4rem 3rem",
+            justifyContent: "space-between",
           }}>
             {/* Top: breadcrumb */}
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -74,7 +101,7 @@ export default function ContactPage() {
             </div>
 
             {/* Middle: big headline */}
-            <div>
+            <Reveal>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem" }}>
                 <div style={{ width: 48, height: 3, background: "var(--gold)" }} />
                 <span style={{ fontSize: 10, color: "var(--gold)", letterSpacing: 4, textTransform: "uppercase", fontWeight: 700 }}>
@@ -94,7 +121,7 @@ export default function ContactPage() {
                 We&apos;re excited to work together. We welcome your questions and comments,
                 and look forward to speaking with you.
               </p>
-            </div>
+            </Reveal>
 
             {/* Bottom: contact info blocks */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -119,9 +146,8 @@ export default function ContactPage() {
         </div>
 
         {/* RIGHT — form side */}
-        <div style={{
+        <div className="contact-page-form-pad" style={{
           background: "var(--dark2)",
-          padding: "5rem 4rem",
           overflowY: "auto",
           display: "flex", flexDirection: "column", justifyContent: "center",
         }}>
@@ -134,6 +160,17 @@ export default function ContactPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+            <input type="hidden" {...register("role")} />
+
+            {/* Honeypot — hidden from real users */}
+            <input
+              {...register("company")}
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+              aria-hidden="true"
+            />
 
             {/* Role pills */}
             <div>
@@ -144,7 +181,7 @@ export default function ContactPage() {
                 {roles.map((r) => (
                   <button
                     key={r} type="button"
-                    onClick={() => setSelectedRole(r)}
+                    onClick={() => chooseRole(r)}
                     style={{
                       padding: "8px 16px", fontSize: 12,
                       border: `1px solid ${selectedRole === r ? "var(--gold)" : "rgba(255,255,255,0.1)"}`,
@@ -201,7 +238,7 @@ export default function ContactPage() {
             <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
 
             {/* Name + Phone */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+            <div className="form-two-col" style={{ gap: "2rem" }}>
               <div>
                 <p style={{ fontSize: 10, color: "#555", letterSpacing: 2.5, textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>* Your Name</p>
                 <input {...register("name", { required: true })} placeholder="John Smith" style={inputStyle(!!errors.name)} />
@@ -227,18 +264,21 @@ export default function ContactPage() {
             </div>
 
             {/* Submit */}
-            <button type="submit" style={{
-              background: isSubmitSuccessful ? "#1a1a1a" : "var(--gold)",
-              color: isSubmitSuccessful ? "var(--gold)" : "#111",
-              border: isSubmitSuccessful ? "1px solid var(--gold)" : "none",
+            <button type="submit" disabled={isSubmitting} className="btn-lift" style={{
+              background: status === "success" ? "#1a1a1a" : "var(--gold)",
+              color: status === "success" ? "var(--gold)" : "#111",
+              border: status === "success" ? "1px solid var(--gold)" : "none",
               padding: "18px 40px", fontWeight: 900,
               fontSize: 12, letterSpacing: 3,
-              textTransform: "uppercase", cursor: "pointer",
+              textTransform: "uppercase", cursor: isSubmitting ? "wait" : "pointer",
               fontFamily: "inherit", alignSelf: "flex-start",
-              transition: "all 0.3s",
+              transition: "all 0.3s", opacity: isSubmitting ? 0.7 : 1,
             }}>
-              {isSubmitSuccessful ? "✓ Message Sent!" : "Send Message →"}
+              {isSubmitting ? "Sending…" : status === "success" ? "✓ Message Sent!" : "Send Message →"}
             </button>
+            {status === "error" && (
+              <p style={{ fontSize: 13, color: "#e53e3e" }}>{errorMsg}</p>
+            )}
           </form>
         </div>
       </div>

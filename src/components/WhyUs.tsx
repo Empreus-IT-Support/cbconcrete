@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Reveal from "./Reveal";
 
 const reasons = [
   { num: "01", title: "Licensed & Insured", desc: "Fully licensed and insured for complete peace of mind on every project.", detail: "ACT Builder's Licence" },
@@ -15,11 +16,11 @@ export default function WhyUs() {
       <div style={{ position: "relative", height: 320, overflow: "hidden" }}>
         <Image
           src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&q=80"
-          alt="Construction team"
+          alt="CB Concrete crew on a Canberra construction site"
           fill sizes="100vw"
           style={{ objectFit: "cover", filter: "grayscale(100%) brightness(0.3)" }}
         />
-        <div style={{
+        <Reveal style={{
           position: "absolute", inset: 0, zIndex: 1,
           display: "flex", flexDirection: "column",
           justifyContent: "center", padding: "0 3rem",
@@ -34,15 +35,11 @@ export default function WhyUs() {
             BUILT ON QUALITY<br />
             <span style={{ color: "var(--gold)" }}>&amp; TRUST.</span>
           </h2>
-        </div>
+        </Reveal>
       </div>
 
       {/* Bottom: horizontal 4-col cards */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        borderTop: "3px solid var(--gold)",
-      }}>
+      <div className="whyus-grid stagger-children" style={{ borderTop: "3px solid var(--gold)" }}>
         {reasons.map((r, i) => (
           <div
             key={r.num}
@@ -52,13 +49,13 @@ export default function WhyUs() {
               position: "relative", overflow: "hidden",
               cursor: "default", transition: "background 0.3s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(245,197,24,0.05)")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,245,48,0.05)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
             <span style={{
               position: "absolute", right: 12, bottom: -20,
               fontSize: 120, fontWeight: 900,
-              color: "rgba(245,197,24,0.04)",
+              color: "rgba(255,245,48,0.04)",
               lineHeight: 1, userSelect: "none",
             }}>{r.num}</span>
 
@@ -67,7 +64,7 @@ export default function WhyUs() {
             <p style={{ fontSize: 13, color: "#555", lineHeight: 1.8, marginBottom: "2rem" }}>{r.desc}</p>
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 8,
-              border: "1px solid rgba(245,197,24,0.25)", padding: "6px 12px",
+              border: "1px solid rgba(255,245,48,0.25)", padding: "6px 12px",
             }}>
               <div style={{ width: 5, height: 5, background: "var(--gold)", borderRadius: "50%" }} />
               <span style={{ fontSize: 10, color: "var(--gold)", letterSpacing: 1.5, fontWeight: 700 }}>{r.detail}</span>

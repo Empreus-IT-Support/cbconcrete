@@ -69,7 +69,7 @@ export default function ConcretingPage() {
       <section style={{ position: "relative", height: 420, overflow: "hidden" }}>
         <Image
           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80"
-          alt="Concreting hero"
+          alt="Freshly poured concrete slab on a Canberra building site"
           fill sizes="100vw" priority
           style={{ objectFit: "cover", filter: "grayscale(60%) brightness(0.35)" }}
         />
@@ -112,7 +112,7 @@ export default function ConcretingPage() {
 
       {/* ── About paragraph ── */}
       <section style={{ background: "var(--dark2)", padding: "5rem 3rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
+        <div className="about-split">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.5rem" }}>
               <div style={{ width: 36, height: 3, background: "var(--gold)" }} />
@@ -146,7 +146,7 @@ export default function ConcretingPage() {
           </div>
 
           {/* Right: quick stats */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "rgba(245,197,24,0.15)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "rgba(255,245,48,0.15)" }}>
             {[
               { val: "20+", label: "Years Experience" },
               { val: "500+", label: "Projects Completed" },
@@ -189,17 +189,13 @@ export default function ConcretingPage() {
           {services.map((s, i) => (
             <div
               key={s.num}
-              style={{
-                display: "grid",
-                gridTemplateColumns: i % 2 === 0 ? "420px 1fr" : "1fr 420px",
-                minHeight: 260,
-                overflow: "hidden",
-              }}
+              className={i % 2 === 0 ? "split-row-even" : "split-row-odd"}
+              style={{ overflow: "hidden" }}
             >
               {/* Image — left on even rows */}
               {i % 2 === 0 && (
                 <div style={{ position: "relative", overflow: "hidden" }}>
-                  <Image src={s.src} alt={s.title} fill sizes="420px"
+                  <Image src={s.src} alt={s.title} fill sizes="(max-width: 768px) 100vw, 420px"
                     style={{ objectFit: "cover", filter: "grayscale(70%)" }}
                   />
                   <div style={{
@@ -235,7 +231,7 @@ export default function ConcretingPage() {
               {/* Image — right on odd rows */}
               {i % 2 !== 0 && (
                 <div style={{ position: "relative", overflow: "hidden" }}>
-                  <Image src={s.src} alt={s.title} fill sizes="420px"
+                  <Image src={s.src} alt={s.title} fill sizes="(max-width: 768px) 100vw, 420px"
                     style={{ objectFit: "cover", filter: "grayscale(70%)" }}
                   />
                   <div style={{

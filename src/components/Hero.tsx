@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import Reveal from "./Reveal";
 
 const slides = [
   { label: "Concreting", src: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&q=80", alt: "Concrete site" },
@@ -25,16 +26,13 @@ export default function Hero() {
   return (
     <>
       {/* ── HERO: full-height asymmetric layout ── */}
-      <section style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 520px",
-        minHeight: "92vh",
+      <section className="hero-grid" style={{
         background: "var(--dark)",
         position: "relative",
         overflow: "hidden",
       }}>
         {/* Left: big background image with overlay text */}
-        <div style={{ position: "relative", overflow: "hidden" }}>
+        <div className="hero-image-side" style={{ position: "relative", overflow: "hidden" }}>
           <Image
             src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1400&q=80"
             alt="Construction site"
@@ -50,20 +48,20 @@ export default function Hero() {
           }} />
 
           {/* Text over image */}
-          <div style={{
+          <div className="hero-text-pad" style={{
             position: "absolute", inset: 0, zIndex: 1,
             display: "flex", flexDirection: "column",
-            justifyContent: "flex-end", padding: "4rem",
+            justifyContent: "flex-end",
           }}>
             {/* Eyebrow */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.5rem" }}>
+            <div className="hero-anim hero-anim-1" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.5rem" }}>
               <div style={{ width: 48, height: 2, background: "var(--gold)" }} />
               <span style={{ fontSize: 11, color: "var(--gold)", letterSpacing: 4, textTransform: "uppercase", fontWeight: 700 }}>
                 Canberra&apos;s #1 Concreting Contractor
               </span>
             </div>
 
-            <h1 style={{
+            <h1 className="hero-anim hero-anim-2" style={{
               fontSize: "clamp(3.5rem, 7vw, 6.5rem)",
               fontWeight: 900, color: "#fff",
               lineHeight: 0.92, letterSpacing: -3,
@@ -76,13 +74,13 @@ export default function Hero() {
               PROJECT.
             </h1>
 
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", maxWidth: 440, lineHeight: 1.8, marginBottom: "2.5rem" }}>
+            <p className="hero-anim hero-anim-3" style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", maxWidth: 440, lineHeight: 1.8, marginBottom: "2.5rem" }}>
               CB Concrete is one of Canberra&apos;s leading concreting contractors &amp; excavation
               companies — delivering superior results for residential and commercial clients since day one.
             </p>
 
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-              <Link href="#other-services" style={{
+            <div className="hero-anim hero-anim-4" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <Link href="#other-services" className="btn-lift" style={{
                 background: "var(--gold)", color: "#111",
                 padding: "16px 36px", fontWeight: 800,
                 fontSize: 12, letterSpacing: 2, textTransform: "uppercase",
@@ -90,7 +88,7 @@ export default function Hero() {
               }}>
                 Our Services
               </Link>
-              <Link href="#contact" style={{
+              <Link href="#contact" className="btn-lift" style={{
                 border: "1px solid rgba(255,255,255,0.2)", color: "#fff",
                 padding: "16px 36px", fontWeight: 600,
                 fontSize: 12, letterSpacing: 2, textTransform: "uppercase",
@@ -103,10 +101,9 @@ export default function Hero() {
         </div>
 
         {/* Right: vertical stats + info panel */}
-        <div style={{
+        <div className="hero-stats-col stagger-children" style={{
           background: "var(--dark2)",
           borderLeft: "1px solid rgba(255,255,255,0.05)",
-          display: "flex", flexDirection: "column",
         }}>
           {/* Stats stacked vertically */}
           {[
@@ -114,7 +111,7 @@ export default function Hero() {
             { val: "500+", label: "Projects Completed", sub: "Residential & commercial" },
             { val: "100%", label: "Client Satisfaction", sub: "Our guarantee to you" },
           ].map((s, i) => (
-            <div key={s.val} style={{
+            <div key={s.val} className="hero-stat-item" style={{
               flex: 1, padding: "2.5rem",
               borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none",
               display: "flex", flexDirection: "column", justifyContent: "center",
@@ -124,7 +121,7 @@ export default function Hero() {
               <span style={{
                 position: "absolute", right: 16, bottom: -16,
                 fontSize: 96, fontWeight: 900,
-                color: "rgba(245,197,24,0.04)",
+                color: "rgba(255,245,48,0.04)",
                 letterSpacing: -4, userSelect: "none",
                 lineHeight: 1,
               }}>{s.val}</span>
@@ -140,9 +137,9 @@ export default function Hero() {
       </section>
 
       {/* ── SERVICE SLIDER ── */}
-      <section style={{ background: "var(--dark2)", padding: "5rem 3rem 0" }}>
+      <section className="hero-slider-pad" style={{ background: "var(--dark2)" }}>
         {/* Header */}
-        <div style={{
+        <Reveal style={{
           display: "flex", alignItems: "flex-end",
           justifyContent: "space-between",
           marginBottom: "3rem", flexWrap: "wrap", gap: "1.5rem",
@@ -172,10 +169,10 @@ export default function Hero() {
           }}>
             VIEW ALL SERVICES →
           </Link>
-        </div>
+        </Reveal>
 
         {/* 2-up slider cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div className="slider-cards stagger-children">
           {visible.map((card, i) => (
             <div key={`${card.label}-${i}`} style={{ position: "relative", height: 420, overflow: "hidden" }}>
               <Image src={card.src} alt={card.alt} fill sizes="50vw"

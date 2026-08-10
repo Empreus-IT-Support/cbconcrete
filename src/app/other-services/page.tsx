@@ -99,7 +99,7 @@ export default function OtherServicesPage() {
       <section style={{ position: "relative", height: 400, overflow: "hidden" }}>
         <Image
           src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
-          alt="Other services" fill sizes="100vw" priority
+          alt="Decorative coloured concrete finish" fill sizes="100vw" priority
           style={{ objectFit: "cover", filter: "grayscale(60%) brightness(0.28)" }}
         />
         <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "4rem 3rem" }}>
@@ -129,7 +129,7 @@ export default function OtherServicesPage() {
       <section style={{ background: "var(--dark)", padding: "5rem 3rem" }}>
 
         {/* Row 1: big left + two stacked right */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: "3px", marginBottom: "3px" }}>
+        <div className="mag-row-large">
           {/* Big feature card */}
           <MagCard s={services[0]} size="large" expanded={expanded} setExpanded={setExpanded} />
           <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: "3px" }}>
@@ -139,14 +139,14 @@ export default function OtherServicesPage() {
         </div>
 
         {/* Row 2: three equal */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px", marginBottom: "3px" }}>
+        <div className="mag-row-triple">
           <MagCard s={services[3]} size="medium" expanded={expanded} setExpanded={setExpanded} />
           <MagCard s={services[4]} size="medium" expanded={expanded} setExpanded={setExpanded} />
           <MagCard s={services[5]} size="medium" expanded={expanded} setExpanded={setExpanded} />
         </div>
 
         {/* Row 3: small left + big right */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "3px", marginBottom: "3px" }}>
+        <div className="mag-row-large-reverse">
           <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: "3px" }}>
             <MagCard s={services[6]} size="small" expanded={expanded} setExpanded={setExpanded} />
             <MagCard s={services[7]} size="small" expanded={expanded} setExpanded={setExpanded} />
@@ -216,7 +216,7 @@ function MagCard({ s, size, expanded, setExpanded }: {
       {/* Number — top right */}
       <span style={{
         position: "absolute", top: 16, right: 16, zIndex: 2,
-        fontSize: 11, fontWeight: 800, color: "rgba(245,197,24,0.7)", letterSpacing: 2,
+        fontSize: 11, fontWeight: 800, color: "rgba(255,245,48,0.7)", letterSpacing: 2,
       }}>{s.id}</span>
 
       {/* Default bottom content */}
