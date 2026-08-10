@@ -105,7 +105,7 @@ export default function Footer() {
         <Image src="/cb-concrete-logo.png" alt="CB Concrete" width={259} height={29} style={{ height: 24, width: "auto" }} />
 
         <p style={{ fontSize: 12, color: "#888" }}>
-          Copyright © 2023 CB Concrete. Managed by{" "}
+          Copyright © {new Date().getFullYear()} CB Concrete. Managed by{" "}
           <a href="https://empreus.com.au" style={{ color: "#bbb", fontWeight: 700, textDecoration: "none" }}>Empreus IT Support</a>
         </p>
 
