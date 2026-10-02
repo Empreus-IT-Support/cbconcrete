@@ -33,13 +33,13 @@ export default function Contact() {
         body: JSON.stringify(data),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.error || "Something went wrong — please try again.");
+      if (!res.ok) throw new Error(body.error || "Something went wrong. Please try again.");
       setStatus("success");
       reset();
       setTimeout(() => setStatus("idle"), 4000);
     } catch (err) {
       setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong — please try again.");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
   };
 

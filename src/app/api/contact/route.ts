@@ -1,20 +1,29 @@
 import { NextResponse } from "next/server";
 import { rateLimited, clientIp } from "@/lib/rate-limit";
+import { atlasConfigured, sendAtlasEmail } from "@/lib/atlas";
 
-// Sends enquiries via Resend (https://resend.com).
-// Required env vars:
-//   RESEND_API_KEY      from the Resend dashboard
-//   CONTACT_FROM        verified sender, e.g. website@cbconcrete.com.au
-//                       (the domain must be verified in Resend via DNS)
-//   CONTACT_RECIPIENT   defaults to admin@cbconcrete.com.au
+// Sends enquiries via Atlas (Empreus's own email platform). See lib/atlas.ts
+// for the client contract. Required env vars:
+//   ATLAS_API_KEY       the per-client key minted in Atlas for this domain
+//   CONTACT_FROM        defaults to DoNotReply@cbconcrete.com.au (must be a
+//                       bare address the key authorises — no display name)
+//   CONTACT_RECIPIENT   defaults to admin@cbconcrete.com.au (must be on the
+//                       key's recipient allowlist)
 // Without a key configured, enquiries are logged server-side only.
 
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/;
 
-const esc = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function isTrustedOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  if (!origin) return true; // no Origin header (e.g. same-origin edge cases): don't block
+  try {
+    return new URL(origin).host === req.headers.get("host");
+  } catch {
+    return false;
+  }
+}
 
-async function sendViaResend(fields: {
+async function deliver(fields: {
   name: string;
   phone: string;
   email: string;
@@ -23,47 +32,36 @@ async function sendViaResend(fields: {
   role: string;
   message: string;
 }): Promise<"sent" | "skipped" | "failed"> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return "skipped";
-  const from = process.env.CONTACT_FROM ?? "CB Concrete Website <onboarding@resend.dev>";
+  if (!atlasConfigured()) return "skipped";
+  const from = process.env.CONTACT_FROM ?? "DoNotReply@cbconcrete.com.au";
   const to = process.env.CONTACT_RECIPIENT ?? "admin@cbconcrete.com.au";
 
-  const html = `
-    <h2>New website enquiry</h2>
-    <p><strong>Name:</strong> ${esc(fields.name)}</p>
-    <p><strong>Phone:</strong> ${esc(fields.phone)}</p>
-    <p><strong>Email:</strong> ${esc(fields.email)}</p>
-    ${fields.role ? `<p><strong>I'm a/an:</strong> ${esc(fields.role)}</p>` : ""}
-    ${fields.intent ? `<p><strong>Wants to:</strong> ${esc(fields.intent)}</p>` : ""}
-    ${fields.service ? `<p><strong>Interested in:</strong> ${esc(fields.service)}</p>` : ""}
-    <p><strong>Message:</strong></p>
-    <p>${esc(fields.message).replace(/\n/g, "<br/>")}</p>`;
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      reply_to: fields.email,
-      subject: `Website enquiry — ${fields.service || "General"} (${fields.name})`,
-      html,
-    }),
+  const result = await sendAtlasEmail({
+    from,
+    to,
+    replyTo: fields.email,
+    subject: `Website enquiry: ${fields.service || "General"} (${fields.name})`,
+    text: [
+      `Name: ${fields.name}`,
+      `Phone: ${fields.phone}`,
+      `Email: ${fields.email}`,
+      fields.role ? `I'm a/an: ${fields.role}` : null,
+      fields.intent ? `Wants to: ${fields.intent}` : null,
+      fields.service ? `Interested in: ${fields.service}` : null,
+      "",
+      fields.message,
+      "",
+      "Sent from the enquiry form on cbconcrete.com.au",
+    ]
+      .filter((l) => l !== null)
+      .join("\n"),
   });
-  return res.ok ? "sent" : "failed";
-}
 
-function isTrustedOrigin(req: Request): boolean {
-  const origin = req.headers.get("origin");
-  if (!origin) return true; // no Origin header (e.g. same-origin edge cases) — don't block
-  try {
-    return new URL(origin).host === req.headers.get("host");
-  } catch {
-    return false;
+  if (!result.ok) {
+    console.error(`Atlas send failed ${result.status}: ${result.detail}`);
+    return "failed";
   }
+  return "sent";
 }
 
 export async function POST(req: Request) {
@@ -73,7 +71,7 @@ export async function POST(req: Request) {
 
   if (rateLimited(clientIp(req))) {
     return NextResponse.json(
-      { error: "Too many requests — please try again later." },
+      { error: "Too many requests. Please try again later." },
       { status: 429 }
     );
   }
@@ -117,7 +115,7 @@ export async function POST(req: Request) {
   const fields = { name, phone, email, service, intent, role, message };
   let outcome: string;
   try {
-    outcome = await sendViaResend(fields);
+    outcome = await deliver(fields);
   } catch {
     outcome = "failed";
   }
@@ -125,7 +123,7 @@ export async function POST(req: Request) {
 
   if (outcome === "failed") {
     return NextResponse.json(
-      { error: "We couldn't send your enquiry — please call 0402 122 028." },
+      { error: "We couldn't send your enquiry. Please call 0402 122 028." },
       { status: 502 }
     );
   }

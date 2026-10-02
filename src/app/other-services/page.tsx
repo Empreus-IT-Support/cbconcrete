@@ -11,7 +11,7 @@ const services = [
     title: "Exposed Aggregate",
     tag: "Decorative",
     src: "https://images.unsplash.com/photo-1565008576549-57569a49371d?w=900&q=80",
-    intro: "CB Concrete Canberra offer an extensive range of concrete styles & colours to meet any style of home or building. Exposed Aggregate is achieved by exposing the small stones on the top of the concrete surface — fast becoming one of the most popular options for home owners & builders.",
+    intro: "CB Concrete Canberra offer an extensive range of concrete styles & colours to meet any style of home or building. Exposed Aggregate is achieved by exposing the small stones on the top of the concrete surface, and is fast becoming one of the most popular options for home owners & builders.",
     bullets: ["Low maintenance", "Suitable for indoor and outdoor use", "Ideal for driveways and footpaths", "Great for alfresco and courtyards", "Strong, durable and stylish"],
   },
   {

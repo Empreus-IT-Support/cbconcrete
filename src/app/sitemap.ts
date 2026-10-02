@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/concreting", priority: 0.8 },
     { path: "/other-services", priority: 0.8 },
     { path: "/contact", priority: 0.9 },
+    { path: "/privacy-policy", priority: 0.3 },
   ];
   const lastModified = new Date();
   return routes.map(({ path, priority }) => ({

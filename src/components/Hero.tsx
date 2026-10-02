@@ -76,7 +76,7 @@ export default function Hero() {
 
             <p className="hero-anim hero-anim-3" style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", maxWidth: 440, lineHeight: 1.8, marginBottom: "2.5rem" }}>
               CB Concrete is one of Canberra&apos;s leading concreting contractors &amp; excavation
-              companies — delivering superior results for residential and commercial clients since day one.
+              companies, delivering superior results for residential and commercial clients since day one.
             </p>
 
             <div className="hero-anim hero-anim-4" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>

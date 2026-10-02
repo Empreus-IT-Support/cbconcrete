@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Jost, Rubik } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import LoadingScreen from "@/components/LoadingScreen";
+import { indexable } from "./robots";
 import "./globals.css";
 
 const jost = Jost({
@@ -53,16 +55,21 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  // robots.txt asks crawlers not to fetch; this tells any crawler that
+  // reaches a page anyway not to index it. Both are off until SITE_INDEXABLE
+  // is set in Vercel at domain cutover.
+  robots: indexable
+    ? {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+        },
+      }
+    : { index: false, follow: false, nocache: true },
 };
 
 export const viewport: Viewport = {
@@ -97,6 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <LoadingScreen />
         {children}
+        <Analytics />
       </body>
     </html>
   );

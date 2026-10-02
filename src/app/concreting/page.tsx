@@ -106,7 +106,7 @@ export default function ConcretingPage() {
       {/* ── Intro strip ── */}
       <div style={{ background: "var(--gold)", padding: "1.25rem 3rem" }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: "#111", letterSpacing: 1, textTransform: "uppercase" }}>
-          Residential and commercial concreting — Canberra &amp; surrounds
+          Residential and commercial concreting, Canberra &amp; surrounds
         </p>
       </div>
 

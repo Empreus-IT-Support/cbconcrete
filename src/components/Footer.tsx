@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 
 const col1 = ["Concreting", "Exposed Aggregate", "Polished Concrete"];
 const col2 = ["Coloured Concrete", "Stencil Concrete", "Concrete Sealers"];
@@ -107,6 +108,8 @@ export default function Footer() {
         <p style={{ fontSize: 12, color: "#888" }}>
           Copyright © {new Date().getFullYear()} CB Concrete. Managed by{" "}
           <a href="https://empreus.com.au" style={{ color: "#bbb", fontWeight: 700, textDecoration: "none" }}>Empreus IT Support</a>
+          {" "}&middot;{" "}
+          <Link href="/privacy-policy" style={{ color: "#bbb", fontWeight: 700, textDecoration: "none" }}>Privacy Policy</Link>
         </p>
 
         <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
